@@ -55,7 +55,7 @@ function updateThemeButtonUI(theme) {
 function initLiveBackendSync() {
   setInterval(async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/events');
+      const response = await fetch('/api/events');
       if (!response.ok) return;
 
       const data = await response.json();
@@ -178,7 +178,7 @@ function openReportModal() {
         // Photo Snapshot cell HTML
         let snapshotHtml = `<span style="font-size:0.75rem; color:var(--text-muted);">Canvas Sim</span>`;
         if (evt.imageUrl) {
-          snapshotHtml = `<img src="http://localhost:8000${evt.imageUrl}" style="width: 50px; height: 35px; border-radius: 6px; object-fit: cover; border: 1px solid var(--primary); cursor: pointer; transition: transform 0.2s;" onclick="openPhotoModal('http://localhost:8000${evt.imageUrl}', '${evt.id} (${evt.eventType})', '${evt.locationName}')" title="Click to Expand Photo">`;
+          snapshotHtml = `<img src="${evt.imageUrl}" style="width: 50px; height: 35px; border-radius: 6px; object-fit: cover; border: 1px solid var(--primary); cursor: pointer; transition: transform 0.2s;" onclick="openPhotoModal('${evt.imageUrl}', '${evt.id} (${evt.eventType})', '${evt.locationName}')" title="Click to Expand Photo">`;
         }
 
         const statusBadge = isResolved
@@ -218,7 +218,7 @@ async function markEventResolved(eventId) {
   }
 
   try {
-    await fetch(`http://localhost:8000/api/events/${eventId}/resolve`, { method: 'POST' });
+    await fetch(`/api/events/${eventId}/resolve`, { method: 'POST' });
   } catch (err) {
     console.warn("Offline status update:", err);
   }
@@ -233,7 +233,7 @@ async function deleteEvent(eventId) {
   simulatedEvents = simulatedEvents.filter(e => e.id !== eventId);
 
   try {
-    await fetch(`http://localhost:8000/api/events/${eventId}`, { method: 'DELETE' });
+    await fetch(`/api/events/${eventId}`, { method: 'DELETE' });
   } catch (err) {
     console.warn("Offline delete:", err);
   }
@@ -248,7 +248,7 @@ async function resolveAllEvents() {
   simulatedEvents.forEach(evt => evt.status = 'resolved');
   for (const evt of simulatedEvents) {
     try {
-      await fetch(`http://localhost:8000/api/events/${evt.id}/resolve`, { method: 'POST' });
+      await fetch(`/api/events/${evt.id}/resolve`, { method: 'POST' });
     } catch (e) { }
   }
 
@@ -262,7 +262,7 @@ async function clearResolvedEvents() {
   simulatedEvents = simulatedEvents.filter(evt => evt.status !== 'resolved');
 
   try {
-    await fetch('http://localhost:8000/api/events/clear-resolved', { method: 'POST' });
+    await fetch('/api/events/clear-resolved', { method: 'POST' });
   } catch (err) {
     console.warn("Offline clear resolved:", err);
   }
