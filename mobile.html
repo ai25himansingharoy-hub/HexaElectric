@@ -328,11 +328,11 @@
     <div class="config-grid">
       <div class="input-group">
         <label for="backendUrl">Backend Server API</label>
-        <input type="text" id="backendUrl" value="" placeholder="Auto-configured">
+        <input type="text" id="backendUrl" value="" placeholder="Auto-configured" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
       </div>
       <div class="input-group">
         <label for="rfApiKey">Roboflow API Key</label>
-        <input type="password" id="rfApiKey" placeholder="From .env file">
+        <input type="password" id="rfApiKey" placeholder="From .env file" autocomplete="off">
       </div>
     </div>
   </div>
@@ -352,11 +352,28 @@
     let captureCtx = captureCanvas.getContext('2d');
 
     // Auto-detect backend host address (Use origin domain dynamically on Render / Localhost)
+    function sanitizeBackendUrlInput() {
+      let host = window.location.origin;
+      if (window.location.protocol === 'file:' || !window.location.origin || window.location.origin === 'null') {
+        host = 'http://localhost:8000';
+      }
+      let currentVal = document.getElementById('backendUrl').value.trim();
+      // Strip invalid :8000 port or http: protocol if on production HTTPS Render
+      if (window.location.protocol === 'https:' || window.location.hostname.includes('onrender.com')) {
+        if (!currentVal || currentVal.includes(':8000') || currentVal.startsWith('http:')) {
+          currentVal = host;
+        }
+      }
+      document.getElementById('backendUrl').value = currentVal || host;
+    }
+
     let defaultHost = window.location.origin;
     if (window.location.protocol === 'file:' || !window.location.origin || window.location.origin === 'null') {
       defaultHost = 'http://localhost:8000';
     }
-    document.getElementById('backendUrl').value = defaultHost;
+    sanitizeBackendUrlInput();
+    window.addEventListener('pageshow', sanitizeBackendUrlInput);
+    window.addEventListener('DOMContentLoaded', sanitizeBackendUrlInput);
 
     // Check if insecure HTTP IP origin
     if (window.location.protocol === 'http:' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
