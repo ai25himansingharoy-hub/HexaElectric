@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>HEXALECTRIC | Mobile Bus Camera Sensor</title>
 
   <!-- Starbucks Inspired Fonts -->
@@ -507,9 +510,17 @@
       isProcessingFrame = true;
 
       let backendUrl = document.getElementById('backendUrl').value.trim() || defaultHost;
-      if (!backendUrl || backendUrl === 'null') {
+      
+      // Auto-correct cached invalid URLs (e.g. http://...:8000 when running on production HTTPS)
+      if (window.location.protocol === 'https:' && (backendUrl.startsWith('http:') || backendUrl.includes(':8000'))) {
         backendUrl = window.location.origin;
+        document.getElementById('backendUrl').value = backendUrl;
       }
+      if (!backendUrl || backendUrl === 'null' || backendUrl === 'undefined') {
+        backendUrl = window.location.origin;
+        document.getElementById('backendUrl').value = backendUrl;
+      }
+
       const apiKey = document.getElementById('rfApiKey').value.trim();
 
       try {
