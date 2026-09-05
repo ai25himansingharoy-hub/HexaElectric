@@ -348,11 +348,9 @@
     let captureCanvas = document.getElementById('captureCanvas');
     let captureCtx = captureCanvas.getContext('2d');
 
-    // Auto-detect backend host address (Force server IP when on mobile device)
+    // Auto-detect backend host address (Use origin domain dynamically on Render / Localhost)
     let defaultHost = window.location.origin;
-    if (window.location.hostname && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-      defaultHost = `http://${window.location.hostname}:${window.location.port || 8000}`;
-    } else {
+    if (window.location.protocol === 'file:' || !window.location.origin || window.location.origin === 'null') {
       defaultHost = 'http://localhost:8000';
     }
     document.getElementById('backendUrl').value = defaultHost;
@@ -509,9 +507,8 @@
       isProcessingFrame = true;
 
       let backendUrl = document.getElementById('backendUrl').value.trim() || defaultHost;
-      if (backendUrl.includes('localhost') && window.location.hostname && window.location.hostname !== 'localhost') {
-        backendUrl = `http://${window.location.hostname}:8000`;
-        document.getElementById('backendUrl').value = backendUrl;
+      if (!backendUrl || backendUrl === 'null') {
+        backendUrl = window.location.origin;
       }
       const apiKey = document.getElementById('rfApiKey').value.trim();
 
