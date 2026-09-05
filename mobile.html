@@ -537,6 +537,7 @@
         backendUrl = window.location.origin;
         document.getElementById('backendUrl').value = backendUrl;
       }
+      backendUrl = backendUrl.replace(/\/+$/, '');
 
       const apiKey = document.getElementById('rfApiKey').value.trim();
 
@@ -557,6 +558,10 @@
             imgHeight: sourceHeight
           })
         });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
 
         const data = await response.json();
         const latency = Date.now() - startTime;
@@ -603,7 +608,7 @@
 
       } catch (err) {
         console.error("Backend post error:", err);
-        document.getElementById('fpsHud').innerText = `SERVER DISCONNECTED`;
+        document.getElementById('fpsHud').innerText = `SERVER DISCONNECTED (${err.message || 'Error'})`;
       } finally {
         isProcessingFrame = false;
       }
